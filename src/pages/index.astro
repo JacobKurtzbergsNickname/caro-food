@@ -1,5 +1,7 @@
 ---
-
+import FoodList from "../components/food-list"
+import Header from "../components/header"
+import Page from "../components/page"
 ---
 
 <html lang="en">
@@ -11,6 +13,9 @@
 		<title>Astro</title>
 	</head>
 	<body>
-		<h1>Astro</h1>
+		<Header />
+		<Page>
+			<FoodList client:only="react"/>
+		</Page>
 	</body>
 </html>

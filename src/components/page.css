@@ -1,0 +1,16 @@
+.content {
+    background-color: grey;
+    border-radius: 8px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    padding: 16px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    width: 70%;
+}
+
+.middle-section {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
