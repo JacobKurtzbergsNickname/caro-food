@@ -1,78 +1,120 @@
-import React, { useEffect, useState } from 'react';
-import './food-list.css';
-import { FaEdit, FaTrash } from 'react-icons/fa';
-import { format } from '../utils/dateType';
+import "./food-list.css";
+import { format } from "../utils/dateType.ts";
+import { FaEdit, FaTrash } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import type { FoodItem, FoodItemInput } from "~/types/FoodItem";
+import { syncFoodItems } from "../utils/syncFoodItems.ts";
 
-interface FoodItem {
-    name: string;
-    dateCreated: Date;
-}
+declare var window: Window;
+declare var localStorage: Window["localStorage"];
+declare var console: Console;
 
-function FoodList(): JSX.Element {
-    const [foodItems, setFoodItems] = useState<Array<FoodItem>>(() => {
-        const savedItems = window.localStorage.getItem('foodItems');
-        return savedItems ? JSON.parse(savedItems) : [];
-    });
-    const [newFoodItem, setNewFoodItem] = useState<string>('');
+function FoodList(): React.JSX.Element {
+  const [foodItems, setFoodItems] = useState<Array<FoodItemInput>>(() => {
+    const savedItems = window.localStorage.getItem("foodItems");
+    return savedItems ? JSON.parse(savedItems) : [];
+  });
+  const [newFoodItem, setNewFoodItem] = useState<string>("");
 
-    useEffect(() => {
-        window.localStorage.setItem('foodItems', JSON.stringify(foodItems));
-    }, [foodItems]);
+  useEffect(() => {
+    const itemsFromLocalStorage = localStorage.getItem("foodItems");
+    const localFoodItems: FoodItem[] = itemsFromLocalStorage
+      ? JSON.parse(itemsFromLocalStorage)
+      : [];
 
-    const deleteFoodItem = (index: number) => {
-        const newFoodItems = foodItems.filter((item, i) => i !== index);
-        setFoodItems(newFoodItems);
-    };
+    // Call the async function and handle the returned merged array
+    syncFoodItems(localFoodItems)
+      .then((mergedItems) => {
+        // Update state with the merged array
+        setFoodItems(mergedItems);
+        console.log("Merged items:", mergedItems);
+        mergedItems.forEach((item) => {
+          console.log("Item:", item);
+          Object.keys(item).forEach((key) => {
+            if (key === "dateCreated") {
+              console.log(item[key]);
+            }
+          });
+        });
+      })
+      .catch((err) => {
+        console.error("Error in synchronization:", err);
+      });
+  }, []);
 
-    const editFoodItem = (index: number) => {
-    };
+  useEffect(() => {
+    window.localStorage.setItem("foodItems", JSON.stringify(foodItems));
+  }, [foodItems]);
 
-    return (
-        <>
-            <ul className="list-group">
-                {foodItems.map((item, index) => (
-                    <li 
-                        className="food-list"
-                        key={index}>
-                        <p className="no-margin">{`${item.name} wurde gegessen am ${format(item.dateCreated)}`}</p>
-                        <div>
-                            <button 
-                                className="btn btn-primary food-list-button"
-                                onClick={() => editFoodItem(index)}>
-                                    <FaEdit />
-                            </button>
-                            <button 
-                                className="btn btn-danger food-list-button"
-                                onClick={() => deleteFoodItem(index)}>
-                                    <FaTrash />
-                            </button>
-                        </div>
-                    </li>
-                ))}
-                <li className="food-list">
-                    <input 
-                        type="text"
-                        value={newFoodItem}
-                        onChange={e => setNewFoodItem(e.target.value)}
-                        placeholder="Add a new food item"
-                        className="form-control"
-                    />
-                    <button 
-                        className="btn btn-success food-list-button"
-                        onClick={() => {
-                            if (newFoodItem) {
-                                setFoodItems([...foodItems, { name: newFoodItem, dateCreated: new Date() }]);
-                                setNewFoodItem('');
-                            }
-                        }}>
-                        Add
-                    </button>
-                </li>
-            </ul>
-            <p className="current-value"> {newFoodItem} </p>
-        </>
+  const deleteFoodItem = (index: number): void => {
+    const newFoodItems = foodItems.filter((_, i) => i !== index);
+    setFoodItems([...newFoodItems]);
+  };
 
-    );
+  const editFoodItem = (index: number): void => {
+    const newName = window.prompt("Edit the food item", foodItems[index].name);
+    if (newName) {
+      const newFoodItems = [...foodItems];
+      newFoodItems[index] = { ...newFoodItems[index], name: newName };
+      setFoodItems(newFoodItems);
+    }
+  };
+
+  const addNewFoodItem = (): void => {
+    if (newFoodItem) {
+      setFoodItems([
+        ...foodItems,
+        {
+          name: newFoodItem,
+          sequentialId: foodItems.length,
+          dateCreated: new Date(),
+        },
+      ]);
+      setNewFoodItem("");
+    }
+  };
+
+  return (
+    <>
+      <ul className="list-group">
+        {foodItems.map((item, index) => (
+          <li className="food-list" key={index}>
+            <p className="no-margin">{`${item.name} wurde gegessen am ${format(item.dateCreated)}`}</p>
+            <div>
+              <button
+                className="btn btn-primary food-list-button"
+                onClick={() => editFoodItem(index)}
+              >
+                <FaEdit />
+              </button>
+              <button
+                className="btn btn-danger food-list-button"
+                onClick={() => deleteFoodItem(index)}
+              >
+                <FaTrash />
+              </button>
+            </div>
+          </li>
+        ))}
+        <li className="food-list">
+          <input
+            type="text"
+            value={newFoodItem}
+            onChange={(e) => setNewFoodItem(e.target.value)}
+            placeholder="Add a new food item"
+            className="form-control"
+          />
+          <button
+            className="btn btn-success food-list-button"
+            onClick={() => addNewFoodItem()}
+          >
+            Add
+          </button>
+        </li>
+      </ul>
+      <p className="current-value"> {newFoodItem} </p>
+    </>
+  );
 }
 
 export default FoodList;
