@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { fql, type Client } from "fauna";
+import type { MongoClient } from "mongodb";
 import container from "~/inversify.config";
 
 interface FoodItem {
@@ -11,11 +11,11 @@ declare var console: Console;
 
 export const GET: APIRoute = async () => {
   try {
-    const faunaClient = container.get<Client>("FaunaClient");
-    const foodItemsQuery = fql<Array<FoodItem>>`FoodItems.all()`;
-    const allFoodItems =
-      await faunaClient.query<Array<FoodItem>>(foodItemsQuery);
-    return new Response(JSON.stringify(allFoodItems), {
+    const mongoClient = container.get<MongoClient>("MongoClient");
+    await mongoClient.connect();
+    const database = mongoClient.db("CaroFood");
+    const foodItems = database.collection<FoodItem>("foodItems");
+    return new Response(JSON.stringify(foodItems), {
       headers: {
         "Content-Type": "application/json",
       },

@@ -1,13 +1,23 @@
 // src/inversify.config.ts
-import { Client } from "fauna";
 import { Container } from "inversify";
+import { MongoClient, ServerApiVersion } from "mongodb";
+const uri = `mongodb+srv://CaroFood:${import.meta.env["MONGODB_SECRET"]}@cluster0.ud91x5w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
+});
 
 const container = new Container();
 
 container
-  .bind<Client>("FaunaClient")
+  .bind<MongoClient>("MongoClient")
   .toDynamicValue(() => {
-    return new Client({ secret: import.meta.env["FAUNADB_SECRET"] });
+    return client;
   })
   .inSingletonScope();
 

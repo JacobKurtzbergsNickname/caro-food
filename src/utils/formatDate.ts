@@ -1,4 +1,4 @@
-export const format = (
+export const formatDate = (
   date: Date,
   hasYear = false,
   hasMonth = false,

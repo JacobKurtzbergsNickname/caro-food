@@ -1,5 +1,5 @@
 import "./food-list.css";
-import { format } from "../utils/dateType.ts";
+import { formatDate } from "../utils/formatDate.ts";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import React, { useEffect, useState } from "react";
 import type { FoodItem, FoodItemInput } from "~/types/FoodItem";
@@ -27,7 +27,6 @@ function FoodList(): React.JSX.Element {
       .then((mergedItems) => {
         // Update state with the merged array
         setFoodItems(mergedItems);
-        console.log("Merged items:", mergedItems);
         mergedItems.forEach((item) => {
           console.log("Item:", item);
           Object.keys(item).forEach((key) => {
@@ -79,7 +78,7 @@ function FoodList(): React.JSX.Element {
       <ul className="list-group">
         {foodItems.map((item, index) => (
           <li className="food-list" key={index}>
-            <p className="no-margin">{`${item.name} wurde gegessen am ${format(item.dateCreated)}`}</p>
+            <p className="no-margin">{`${item.name} wurde gegessen am ${formatDate(item.dateCreated)}`}</p>
             <div>
               <button
                 className="btn btn-primary food-list-button"
