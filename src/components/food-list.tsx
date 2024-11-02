@@ -2,74 +2,72 @@ import "./food-list.css";
 import { formatDate } from "../utils/formatDate.ts";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import React, { useEffect, useState } from "react";
-import type { FoodItem, FoodItemInput } from "~/types/FoodItem";
-import { syncFoodItems } from "../utils/syncFoodItems.ts";
+import {
+  toFoodItemsMongo,
+  prepare,
+  type FoodItemInput,
+  type FoodItemsInput,
+  type FoodItemsMongo,
+} from "../types/FoodItem.ts";
+import { fromLS, toLS } from "../utils/syncLS.ts";
 
-declare var window: Window;
-declare var localStorage: Window["localStorage"];
-declare var console: Console;
+declare const console: Console;
+declare const setInterval: (callback: () => void, ms: number) => number;
+declare const clearInterval: (intervalId: number) => void;
+
+const FOOD_ITEMS = "foodItems";
+
+const makeFoodItem = (food: string, id: number): FoodItemInput => {
+  return {
+    name: food,
+    dateCreated: new Date(),
+    sequentialId: id,
+  };
+};
 
 function FoodList(): React.JSX.Element {
-  const [foodItems, setFoodItems] = useState<Array<FoodItemInput>>(() => {
-    const savedItems = window.localStorage.getItem("foodItems");
-    return savedItems ? JSON.parse(savedItems) : [];
-  });
-  const [newFoodItem, setNewFoodItem] = useState<string>("");
+  const [currentItem, setCurrentItem] = useState<string>("");
+  const [foodItems, setFoodItems] = useState<Array<FoodItemInput>>([]);
 
+  // Initial load of the food items in local storage
   useEffect(() => {
-    const itemsFromLocalStorage = localStorage.getItem("foodItems");
-    const localFoodItems: FoodItem[] = itemsFromLocalStorage
-      ? JSON.parse(itemsFromLocalStorage)
-      : [];
-
-    // Call the async function and handle the returned merged array
-    syncFoodItems(localFoodItems)
-      .then((mergedItems) => {
-        // Update state with the merged array
-        setFoodItems(mergedItems);
-        mergedItems.forEach((item) => {
-          console.log("Item:", item);
-          Object.keys(item).forEach((key) => {
-            if (key === "dateCreated") {
-              console.log(item[key]);
-            }
-          });
-        });
-      })
-      .catch((err) => {
-        console.error("Error in synchronization:", err);
-      });
+    setFoodItems((currentItems) =>
+      toLS<FoodItemInput>(FOOD_ITEMS, currentItems)
+    );
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem("foodItems", JSON.stringify(foodItems));
-  }, [foodItems]);
+    const interval = setInterval(() => {
+      const localItems = fromLS<FoodItemInput>(FOOD_ITEMS);
+      if (localItems.length > 0) {
+        const mongo = prepare<FoodItemsInput, FoodItemsMongo>(
+          localItems,
+          toFoodItemsMongo
+        );
+        console.log({ mongo });
+      }
+    }, 6000);
+    return (): void => clearInterval(interval);
+  }, []);
 
   const deleteFoodItem = (index: number): void => {
-    const newFoodItems = foodItems.filter((_, i) => i !== index);
-    setFoodItems([...newFoodItems]);
+    console.log("deleteFoodItem", index);
   };
 
   const editFoodItem = (index: number): void => {
-    const newName = window.prompt("Edit the food item", foodItems[index].name);
-    if (newName) {
-      const newFoodItems = [...foodItems];
-      newFoodItems[index] = { ...newFoodItems[index], name: newName };
-      setFoodItems(newFoodItems);
-    }
+    console.log("editFoodItem", index);
   };
 
   const addNewFoodItem = (): void => {
-    if (newFoodItem) {
-      setFoodItems([
-        ...foodItems,
-        {
-          name: newFoodItem,
-          sequentialId: foodItems.length,
-          dateCreated: new Date(),
-        },
-      ]);
-      setNewFoodItem("");
+    if (currentItem) {
+      setFoodItems((items) =>
+        toLS<FoodItemInput>(FOOD_ITEMS, [
+          ...items,
+          makeFoodItem(currentItem, foodItems.length),
+        ])
+      );
+
+      setCurrentItem("");
     }
   };
 
@@ -98,8 +96,8 @@ function FoodList(): React.JSX.Element {
         <li className="food-list">
           <input
             type="text"
-            value={newFoodItem}
-            onChange={(e) => setNewFoodItem(e.target.value)}
+            value={currentItem}
+            onChange={(e) => setCurrentItem(e.target.value)}
             placeholder="Add a new food item"
             className="form-control"
           />
@@ -111,7 +109,7 @@ function FoodList(): React.JSX.Element {
           </button>
         </li>
       </ul>
-      <p className="current-value"> {newFoodItem} </p>
+      <p className="current-value"> {currentItem} </p>
     </>
   );
 }
