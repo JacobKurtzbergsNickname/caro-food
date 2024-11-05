@@ -25,7 +25,8 @@
     "types": ["node"],
     "baseUrl": ".",
     "paths": {
-      "~/*": ["src/*"]
+      "@server/*": ["src/*.{server,ts}"],
+      "@client/*": ["src/*.{client,tsx}"]
     }
   },
   "include": ["src", "*.js", "*.mjs"],

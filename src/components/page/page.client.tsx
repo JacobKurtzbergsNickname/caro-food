@@ -1,5 +1,5 @@
 import React from "react";
-import "./page.css";
+import "src/styles/page.css";
 
 interface PageProps {
   children?: React.ReactNode;

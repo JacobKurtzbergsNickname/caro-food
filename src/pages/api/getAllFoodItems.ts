@@ -1,20 +1,22 @@
+// src/pages/api/food-data.ts
 import type { APIRoute } from "astro";
-import type { MongoClient } from "mongodb";
-import container from "~/inversify.config";
-
-interface FoodItem {
-  name: string;
-  date: Date;
-}
+import { getDatabase } from "../../lib/mongo-db.server";
 
 declare var console: Console;
 
+interface FoodItem {
+  name: string;
+  dateCreated: Date;
+}
+
 export const GET: APIRoute = async () => {
   try {
-    const mongoClient = container.get<MongoClient>("MongoClient");
-    await mongoClient.connect();
-    const database = mongoClient.db("CaroFood");
-    const foodItems = database.collection<FoodItem>("foodItems");
+    const db = await getDatabase();
+    const foodItems = await db
+      .collection<FoodItem>("foodItems")
+      .find({})
+      .toArray();
+
     return new Response(JSON.stringify(foodItems), {
       headers: {
         "Content-Type": "application/json",
@@ -25,7 +27,7 @@ export const GET: APIRoute = async () => {
     let errorMessage = "";
     if (error instanceof Error) {
       errorMessage = error.message;
-      console.error("FaunaDB Query Error:", error);
+      console.error("MongoDB Query Error:", error);
     } else {
       errorMessage = String(error);
     }
