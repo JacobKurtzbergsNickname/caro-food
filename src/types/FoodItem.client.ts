@@ -1,5 +1,6 @@
 export interface FoodItem {
-  sequentialId: number;
+  _id: string;
+  localID: number;
   name: string;
   dateCreated: Date;
 }

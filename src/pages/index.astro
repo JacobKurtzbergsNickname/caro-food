@@ -1,7 +1,7 @@
 ---
-import FoodList from "../components/food-list/food-list.client"
-import Header from "../components/header/header.client"
-import Page from "../components/page/page.client"
+import Header from "src/components/header/header.client"
+import Page from "src/components/page/page.client"
+import { FoodListContainer } from "src/components/food-list/food-list.container.client"
 ---
 
 <html lang="en">
@@ -15,7 +15,7 @@ import Page from "../components/page/page.client"
 	<body>
 		<Header />
 		<Page>
-			<FoodList client:load/>
+			<FoodListContainer items={[]} client:only="react"/>
 		</Page>
 	</body>
 </html>

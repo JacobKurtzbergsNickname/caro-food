@@ -1,30 +1,23 @@
 import "src/styles/food-list.css";
 import { formatDate } from "../../utils/formatDate.ts";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 import React, { useState } from "react";
-import { type FoodItemInput } from "../../types/FoodItem.client.ts";
 import { makeFoodItem as m } from "../../utils/make-food-item.ts";
+import { useLocalFood } from "src/context/food-provider.client";
+import { EditButton } from "../edit-button/edit-button.tsx";
 
-declare const alert: (message: string) => void;
+declare const console: Console;
 
-interface FoodListProps {
-  existingItems?: Array<FoodItemInput>;
-}
-
-function FoodList({ existingItems }: FoodListProps): React.JSX.Element {
+function FoodList(): React.JSX.Element {
   const [currentItem, setCurrentItem] = useState<string>("");
-  const [foodItems, setFoodItems] = useState<Array<FoodItemInput>>(
-    existingItems || []
-  );
+  const { foodItems, addFoodItem, deleteFoodItem } = useLocalFood();
   const size = foodItems.length;
 
-  const addNewFoodItem = (): void => {
-    if (currentItem) {
-      const newFoodItem = m(currentItem, size);
-      setFoodItems((currentItems) => [...currentItems, newFoodItem]);
-      setCurrentItem("");
-    }
-  };
+  function handleAddFoodItem(): void {
+    const newFoodItem = m(currentItem, size);
+    addFoodItem(newFoodItem);
+    setCurrentItem("");
+  }
 
   return (
     <>
@@ -33,15 +26,10 @@ function FoodList({ existingItems }: FoodListProps): React.JSX.Element {
           <li className="food-list" key={index}>
             <p className="no-margin">{`${item.name} wurde gegessen am ${formatDate(item.dateCreated)}`}</p>
             <div>
-              <button
-                className="btn btn-primary food-list-button"
-                onClick={() => alert("Edit")}
-              >
-                <FaEdit />
-              </button>
+              <EditButton item={item} />
               <button
                 className="btn btn-danger food-list-button"
-                onClick={() => alert("Delete")}
+                onClick={() => deleteFoodItem(item.localID)}
               >
                 <FaTrash />
               </button>
@@ -58,7 +46,7 @@ function FoodList({ existingItems }: FoodListProps): React.JSX.Element {
           />
           <button
             className="btn btn-success food-list-button"
-            onClick={() => addNewFoodItem()}
+            onClick={() => handleAddFoodItem()}
           >
             Add
           </button>
