@@ -10,7 +10,8 @@ declare const console: Console;
 
 function FoodList(): React.JSX.Element {
   const [currentItem, setCurrentItem] = useState<string>("");
-  const { foodItems, addFoodItem, deleteFoodItem } = useLocalFood();
+  const { foodItems, addFoodItem, deleteFoodItem, editFoodItem } =
+    useLocalFood();
   const size = foodItems.length;
 
   function handleAddFoodItem(): void {
@@ -26,7 +27,7 @@ function FoodList(): React.JSX.Element {
           <li className="food-list" key={index}>
             <p className="no-margin">{`${item.name} wurde gegessen am ${formatDate(item.dateCreated)}`}</p>
             <div>
-              <EditButton item={item} />
+              <EditButton item={item} saveFunction={editFoodItem} />
               <button
                 className="btn btn-danger food-list-button"
                 onClick={() => deleteFoodItem(item.localID)}

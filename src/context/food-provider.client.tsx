@@ -14,7 +14,7 @@ interface FoodContextType {
   foodItems: FoodItemInput[];
   addFoodItem: (item: FoodItemInput) => void;
   deleteFoodItem: (id: number) => void;
-  editFoodItem: (id: string, updatedItem: Partial<FoodItemInput>) => void;
+  editFoodItem: (id: number, updatedItem: Partial<FoodItemInput>) => void;
 }
 
 // Create the context with a default value
@@ -52,9 +52,11 @@ export const FoodProvider: React.FC<FoodProviderProps> = ({
     setFoodItems((prev) => prev.filter((item) => item.localID !== id));
   }
 
-  function editFoodItem(id: string, updatedItem: Partial<FoodItemInput>): void {
+  function editFoodItem(id: number, updatedItem: Partial<FoodItemInput>): void {
     setFoodItems((prev) =>
-      prev.map((item) => (item._id === id ? { ...item, ...updatedItem } : item))
+      prev.map((item) =>
+        item.localID === id ? { ...item, ...updatedItem } : item
+      )
     );
   }
 
