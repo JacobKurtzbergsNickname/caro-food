@@ -7,8 +7,6 @@ import { useLocalFood } from "src/context/food-provider.client";
 import { EditButton } from "../edit-button/edit-button.tsx";
 import RatingButtons from "../rating-buttons/rating-buttons.client.tsx";
 
-declare const console: Console;
-
 function FoodList(): React.JSX.Element {
   const [currentItem, setCurrentItem] = useState<string>("");
   const { foodItems, addFoodItem, deleteFoodItem, editFoodItem } =
