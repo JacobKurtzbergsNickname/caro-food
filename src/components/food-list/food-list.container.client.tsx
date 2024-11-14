@@ -7,7 +7,7 @@ interface FoodListContainerProps {
   items: Array<FoodItemInput>;
 }
 
-export function FoodListContainer({
+function FoodListContainer({
   items,
 }: FoodListContainerProps): React.JSX.Element {
   return (
@@ -16,3 +16,5 @@ export function FoodListContainer({
     </FoodProvider>
   );
 }
+
+export default FoodListContainer;

@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { makeFoodItem as m } from "../../utils/make-food-item.ts";
 import { useLocalFood } from "src/context/food-provider.client";
 import { EditButton } from "../edit-button/edit-button.tsx";
+import RatingButtons from "../rating-buttons/rating-buttons.client.tsx";
 
 declare const console: Console;
 
@@ -27,6 +28,7 @@ function FoodList(): React.JSX.Element {
           <li className="food-list" key={index}>
             <p className="no-margin">{`${item.name} wurde gegessen am ${formatDate(item.dateCreated)}`}</p>
             <div>
+              <RatingButtons item={item} saveFunction={editFoodItem} />
               <EditButton item={item} saveFunction={editFoodItem} />
               <button
                 className="btn btn-danger food-list-button"

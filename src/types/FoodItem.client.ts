@@ -1,8 +1,20 @@
+export type GoodRating = ":)";
+export type NeutralRating = ":|";
+export type BadRating = ":(";
+
+export type Ratings = GoodRating | NeutralRating | BadRating;
+export enum Rating {
+  Good = ":)",
+  Bad = ":(",
+  Neutral = ":|",
+}
+
 export interface FoodItem {
   _id: string;
   localID: number;
   name: string;
   dateCreated: Date;
+  rating: Ratings;
 }
 
 export type FoodItemInput = Omit<FoodItem, "uuid">;

@@ -28,6 +28,16 @@ interface FoodProviderProps {
   children: ReactNode;
 }
 
+function toFoodItemInput(item: FoodItemInput, index: number): FoodItemInput {
+  return {
+    localID: item.localID ?? index,
+    name: item.name ?? "",
+    dateCreated: item.dateCreated ?? new Date(),
+    rating: item.rating ?? ":|",
+    _id: item._id ?? "",
+  };
+}
+
 export const FoodProvider: React.FC<FoodProviderProps> = ({
   initialFoodItems,
   children,
@@ -36,7 +46,7 @@ export const FoodProvider: React.FC<FoodProviderProps> = ({
 
   useEffect(() => {
     // Fetch data from localStorage
-    setFoodItems(getFoodItemsFromLS());
+    setFoodItems(getFoodItemsFromLS().map(toFoodItemInput));
   }, [initialFoodItems]);
 
   useEffect(() => {

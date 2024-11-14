@@ -1,7 +1,8 @@
 ---
 import Header from "src/components/header/header.client"
 import Page from "src/components/page/page.client"
-import { FoodListContainer } from "src/components/food-list/food-list.container.client"
+import FoodListContainer from "src/components/food-list/food-list.container.client"
+import SaveJSONButton from "src/components/save-json-button/save-json-button.client"
 ---
 
 <html lang="en">
@@ -16,6 +17,7 @@ import { FoodListContainer } from "src/components/food-list/food-list.container.
 		<Header />
 		<Page>
 			<FoodListContainer items={[]} client:only="react"/>
+			<SaveJSONButton client:only="react"/>
 		</Page>
 	</body>
 </html>
