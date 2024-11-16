@@ -1,20 +1,20 @@
 ---
-import Header from "src/components/header/header.client"
 import Page from "src/components/page/page.client"
 import FoodListContainer from "src/components/food-list/food-list.container.client"
 import SaveJSONButton from "src/components/save-json-button/save-json-button.client"
+import Header from "src/components/header/header.client"
 ---
 
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.png" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<title>Caro's Essen</title>
 	</head>
 	<body>
-		<Header />
+		<Header/>
 		<Page>
 			<FoodListContainer items={[]} client:only="react"/>
 			<SaveJSONButton client:only="react"/>

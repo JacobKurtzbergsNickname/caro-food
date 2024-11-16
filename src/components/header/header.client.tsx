@@ -4,11 +4,7 @@ import "src/styles/header.css"; // Import the custom CSS
 import Hamburger from "../hamburger/hamburger.client.tsx";
 
 const Header: React.FC = () => {
-  const menuItems = [
-    { label: "Home", href: "/" },
-    { label: "About", href: "/about" },
-    { label: "Contact", href: "/contact" },
-  ];
+  const menuItems = [{ label: "Home", href: "/" }];
 
   return (
     <header className="sticky-top bg-dark text-white header">
